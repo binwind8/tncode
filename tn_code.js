@@ -1,4 +1,7 @@
-
+/*! tncode 1.2 author:weiyingbin email:277612909@qq.com
+//@ object webiste: http://www.39gs.com/archive/259.html
+//@ https://github.com/binwind8/tncode
+*/
 if(!document.getElementByClassName){
     function hasClass(elem, cls) {
       cls = cls || '';
@@ -316,21 +319,7 @@ var tncode = {
     _html:function(){
         var d = document.getElementById('tncode_div_bg');
         if(d)return;
-        var html = '<div class="tncode_div_bg" id="tncode_div_bg"></div>'
-+'<div class="tncode_div" id="tncode_div">'
-    +'<canvas class="tncode_canvas_bg"></canvas>'
-    +'<canvas class="tncode_canvas_mark"></canvas>'
-    +'<div class="tncode_msg">验证失败</div>'
-    +'<div class="slide">'
-       +'<div class="slide_block"></div>'
-        +'<div class="slide_block_text">拖动左边滑块完成上方拼图</div>'
-    +'</div>'
-    +'<div class="tools">'
-        +'<div class="tncode_close"></div>'
-        +'<div class="tncode_refresh"></div>'
-        +'<div class="tncode_tips"><a href="http://www.39gs.com/" target="_blank">39gs.com</a></div>'
-    +'</div>'
-+'</div>';
+        var html = '<div class="tncode_div_bg" id="tncode_div_bg"></div><div class="tncode_div" id="tncode_div"><canvas class="tncode_canvas_bg"></canvas><canvas class="tncode_canvas_mark"></canvas><div class="tncode_msg">验证失败</div><div class="slide"><div class="slide_block"></div><div class="slide_block_text">拖动左边滑块完成上方拼图</div></div><div class="tools"><div class="tncode_close"></div><div class="tncode_refresh"></div><div class="tncode_tips"><a href="http://www.39gs.com/" target="_blank">39gs.com</a></div></div></div>';
         var bo = document.getElementsByTagName('body');
         bo[0].appendHTML(html);
     },
@@ -365,7 +354,7 @@ var tncode = {
         //alert("Hong Kong ForHarvest Technology and Culture Development Co. Limited".length);
         var obj = document.getElementByClassName('slide_block');
         obj.style.cssText = "transform: translate(0px, 0px)";
-        var obj = document.getElementByClassName('slide_block_text');
+        obj = document.getElementByClassName('slide_block_text');
         obj.style.display="block";
     },
     init:function(){
