@@ -1,0 +1,153 @@
+/*按钮*/
+body{width:100%,overflow-x:hidden;}
+.clear{clear: both;}
+.tncode{
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    width: 260px;
+    height: 44px;
+    cursor: pointer;
+    opacity: 1;
+    line-height: 44px;
+}
+/*浮层*/
+.tncode_div_bg{
+    width: 100%;height: 100%;position: absolute;
+    top:0;
+    left:0;
+    z-index:1000;
+    background-color: rgba(0,0,0,0.5);
+    opacity:0.3;
+    filter: alpha(opacity=30); background-color:#000;
+    *zoom:1;
+    display: none;
+}
+.tncode_div{
+    display: none;
+    background-color: white;
+    z-index: 1000000;
+    width: 260px;height: 260px;
+    position: absolute;
+    left: 50%;top:50%;
+    margin-top: -130px;
+    margin-left: -130px;
+    border: 1px solid #d1d1d1;
+    border-radius: 2px;
+    overflow: hidden;
+    filter: progid:DXImageTransform.Microsoft.Shadow(color='#969696',Direction=135, Strength=5);/*for ie6,7,8*/
+    /*background-color: #ccc;*/
+    -moz-box-shadow:2px 2px 5px #969696;/*firefox*/
+    -webkit-box-shadow:2px 2px 5px #969696;/*webkit*/
+    box-shadow:2px 2px 5px #969696;/*opera或ie9*/
+
+}
+.tncode_div .tncode_canvas_bg{
+    z-index: 0;
+}
+.tncode_div .tncode_canvas_mark{
+    z-index: 10000;
+}
+.tncode_div canvas{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+/*拉条*/
+.slide,.slide_block,.tools .tncode_close,.tools .tncode_refresh{
+    background-repeat: no-repeat;
+    background-image: url('img/icon.png');
+}
+.tncode_msg{
+    position: absolute;
+    top:136px;
+    left: 10px;
+    width: 220px;
+    height: 20px;
+    background-color: #DE5145;
+    color: #fff;
+    margin: 0;
+    padding: 2px 10px;
+    overflow: visible;
+    background-position: 0px 0px;
+    font-size: 14px;
+    opacity:0;
+    filter: alpha(opacity=0); background-color:#DE5145;
+    z-index: 10000;
+}
+.slide{
+    position: absolute;
+    top:160px;
+    width: 93.52%;
+    height: 0px;
+    background-color: white;
+    background-size: 100%;
+    margin: 5.39% 3.24%;
+    padding: 0px 0px 13.67%;
+    overflow: visible;
+    background-position: 0px 0px;
+}
+
+.tools{
+    position: absolute;
+    top:210px;
+    width: 93.52%;
+    height: 0px;
+    background-color: white;
+    background-size: 100%;
+    margin: 5.39% 3.24%;
+    padding: 5px 0px 13.67%;
+    overflow: visible;
+    background-position: 0px 0px;
+    border-top: 1px solid #EEEEEE;
+}
+
+.slide_block{
+background-position: 0px 12.9794%;
+width: 65px;
+height: 65px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+margin: -4.62% 0 0 -2.31%;
+cursor: pointer;
+}
+.slide_block_text{
+background-position: 0px 12.9794%;
+height: 65px;
+    position: absolute;
+    left: 65px;
+    top: 20px;
+margin: -4.62% 0 0 -2.31%;
+cursor: pointer;
+font-size: 14px;
+    color: rgb(136, 148, 157);
+}
+
+.tncode_canvas_bg,.tncode_canvas_mark{
+   /* width: 240px;*/
+}
+
+.tools .tncode_close{
+    background-position: 0 50%;
+    height: 30px;
+    width: 30px;
+    float: left;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.tools .tncode_refresh{
+    background-position: 0 94%;
+    height: 30px;
+    width: 30px;
+    float: left;
+    cursor: pointer;
+}
+.tools .tncode_tips{
+    float: right;
+}
+.tools .tncode_tips a{
+    text-decoration: none;
+    font-size: 10px;
+    color: rgb(136, 148, 157);
+}
