@@ -437,7 +437,6 @@ var tncode = {
 var $TN = tncode;
 window.onload = function(){
     tncode.init();
-    tncode.show();
 };
 
 
