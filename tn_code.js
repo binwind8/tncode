@@ -16,7 +16,16 @@ if(!document.getElementByClassName){
         }
         return index==-1?arr:arr[index];
     }
-
+    function addClass( elements,cName ){
+       if( !hasClass( elements,cName ) ){
+          elements.className += " " + cName;
+       };
+    }
+    function removeClass( elements,cName ){
+       if( hasClass( elements,cName ) ){
+          elements.className = elements.className.replace( new RegExp( "(\\s|^)" + cName + "(\\s|$)" )," " ); // replace方法是替换
+       };
+    }
 }
 
 if(!Object.appendHTML){
@@ -175,12 +184,20 @@ var tncode = {
         if(responseText=='ok'){
             //tncode._showmsg('√验证成功');
             tncode._tncode.innerHTML = '√验证成功';
-            tncode.hide();
+            tncode._showmsg('√验证成功',1);
+            //tncode.hide();
             tncode._result = true;
+            document.getElementByClassName('hgroup').style.display="block";
+            setTimeout(tncode.hide,3000);
             if(tncode._onsuccess){
                 tncode._onsuccess();
             }
         }else{
+            var obj = document.getElementById('tncode_div');
+            addClass( obj,'dd');
+            setTimeout(function(){
+                removeClass( obj,'dd');
+            },200);
             tncode._result = false;
             tncode._showmsg('验证失败');
         }
@@ -234,6 +251,14 @@ var tncode = {
                 // 大家也可以自己定义的更精确，或者更宽泛一些
                 if(r+g+b<200) data[i+3] = 0;
                 else{
+                    var arr_pix = [1,-5];
+                    var arr_op = [250,0];
+                    for (var i =1; i<arr_pix[0]-arr_pix[1]; i++) {
+                        var iiii = arr_pix[0]-1*i;
+                        var op = parseInt(arr_op[0]-(arr_op[0]-arr_op[1])/(arr_pix[0]-arr_pix[1])*i);
+                        var iii = (j*y+k+iiii*ii)*4;
+                        data[iii+3] = op;
+                    }
                     if(ii==-1){
                         break;
                     }
@@ -254,6 +279,10 @@ var tncode = {
         obj.style.cssText = "transform: translate(0px, 0px)";
     },
     show:function(){
+        var obj = document.getElementByClassName('hgroup');
+        if(obj){
+            obj.style.display="none";
+        }
         tncode.refresh();
         tncode._tncode = this;
         document.getElementById('tncode_div_bg').style.display="block";
@@ -263,8 +292,12 @@ var tncode = {
         document.getElementById('tncode_div_bg').style.display="none";
         document.getElementById('tncode_div').style.display="none";
     },
-    _showmsg:function(msg){
-        var obj = document.getElementByClassName('tncode_msg');
+    _showmsg:function(msg,status=0){
+        if(status==0){
+            var obj = document.getElementByClassName('tncode_msg_error');
+        }else{
+            var obj = document.getElementByClassName('tncode_msg_ok');
+        }
         obj.innerHTML = msg;
         var setOpacity = function (ele, opacity) {
             if (ele.style.opacity != undefined) {
@@ -289,7 +322,9 @@ var tncode = {
                         setOpacity(ele, v);
                     } else {
                         setOpacity(ele, 0);
-                        tncode._reset();
+                        if(status==0){
+                            tncode._reset();
+                        }
                         clearInterval(timer);
                     }
                 }, 100);
@@ -319,7 +354,7 @@ var tncode = {
     _html:function(){
         var d = document.getElementById('tncode_div_bg');
         if(d)return;
-        var html = '<div class="tncode_div_bg" id="tncode_div_bg"></div><div class="tncode_div" id="tncode_div"><canvas class="tncode_canvas_bg"></canvas><canvas class="tncode_canvas_mark"></canvas><div class="tncode_msg">验证失败</div><div class="slide"><div class="slide_block"></div><div class="slide_block_text">拖动左边滑块完成上方拼图</div></div><div class="tools"><div class="tncode_close"></div><div class="tncode_refresh"></div><div class="tncode_tips"><a href="http://www.39gs.com/" target="_blank">39gs.com</a></div></div></div>';
+        var html = '<div class="tncode_div_bg" id="tncode_div_bg"></div><div class="tncode_div" id="tncode_div"><canvas class="tncode_canvas_bg"></canvas><canvas class="tncode_canvas_mark"></canvas><div class="hgroup"></div><div class="tncode_msg_error"></div><div class="tncode_msg_ok"></div><div class="slide"><div class="slide_block"></div><div class="slide_block_text">拖动左边滑块完成上方拼图</div></div><div class="tools"><div class="tncode_close"></div><div class="tncode_refresh"></div><div class="tncode_tips"><a href="http://www.39gs.com/" target="_blank">39gs.com</a></div></div></div>';
         var bo = document.getElementsByTagName('body');
         bo[0].appendHTML(html);
     },
@@ -402,6 +437,7 @@ var tncode = {
 var $TN = tncode;
 window.onload = function(){
     tncode.init();
+    tncode.show();
 };
 
 

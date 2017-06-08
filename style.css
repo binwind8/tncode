@@ -39,7 +39,6 @@ body{width:100%,overflow-x:hidden;}
     -moz-box-shadow:2px 2px 5px #969696;/*firefox*/
     -webkit-box-shadow:2px 2px 5px #969696;/*webkit*/
     box-shadow:2px 2px 5px #969696;/*opera或ie9*/
-
 }
 .tncode_div .tncode_canvas_bg{
     z-index: 0;
@@ -52,19 +51,136 @@ body{width:100%,overflow-x:hidden;}
     left: 10px;
     top: 10px;
 }
+.dd{
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    -webkit-animation: ddf 0.1s ease-in 0s infinite;
+    -o-animation: ddf 0.1s ease-in 0s infinite;
+    animation: ddf 0.1s ease-in 0s infinite;
+}
+@-webkit-keyframes ddf {
+    0% {-webkit-transform: translate(-8px, 3px);}
+    20% {-webkit-transform: translate(-3px, 1.5px);}
+    50% {-webkit-transform: translate(0px, 0px) ;}
+    70% {-webkit-transform: translate(5px, -1.5px) ;}
+    100% {-webkit-transform: translate(0px, 0px);}
+}
+@-o-keyframes ddf {
+    0% {-o-transform: translate(-8px, 3px);}
+    20% {-o-transform: translate(-3px, 1.5px);}
+    50% {-o-transform: translate(0px, 0px) ;}
+    70% {-o-transform: translate(5px, -1.5px) ;}
+    100% {-o-transform: translate(0px, 0px);}
+}
+@-moz-keyframes ddf {
+    0% {-moz-transform: translate(-8px, 3px);}
+    20% {-moz-transform: translate(-3px, 1.5px);}
+    50% {-moz-transform: translate(0px, 0px) ;}
+    70% {-moz-transform: translate(5px, -1.5px) ;}
+    100% {-moz-transform: translate(0px, 0px);}
+}
+@keyframes ddf {
+    0% {transform: translate(-8px, 3px);}
+    20% {transform: translate(-3px, 1.5px);}
+    50% {transform: translate(0px, 0px) ;}
+    70% {transform: translate(5px, -1.5px) ;}
+    100% {transform: translate(0px, 0px);}
+}
+.hgroup{
+    z-index: 20000;
+    content: "";
+    position: absolute;
+    left: -800px;
+    top: 70px;
+    width: 250px;
+    height: 15px;
+    background-color: rgba(255,255,255,.5);
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    -webkit-animation: searchLights 3s ease-in 0s infinite;
+    -o-animation: searchLights 3s ease-in 0s infinite;
+    animation: searchLights 3s ease-in 0s infinite;
+}
+
+
+
+
+
+
+@-webkit-keyframes searchLights {
+    0% {
+        left: -800px;
+        top: 70px;
+    }
+
+    to {
+        left: 350px;
+        top: 70px
+    }
+}
+
+@-o-keyframes searchLights {
+    0% {
+        left: -800px;
+        top: 70px;
+    }
+
+    to {
+        left: 350px;
+        top: 70px
+    }
+}
+
+@-moz-keyframes searchLights {
+    0% {
+        left: -800px;
+        top: 70px;
+    }
+
+    to {
+        left: 350px;
+        top: 70px
+    }
+}
+
+@keyframes searchLights {
+    0% {
+        left: -800px;
+        top: 70px;
+    }
+
+    to {
+        left: 350px;
+        top: 70px
+    }
+}
+
+
+
 
 /*拉条*/
 .slide,.slide_block,.tools .tncode_close,.tools .tncode_refresh{
     background-repeat: no-repeat;
     background-image: url('img/icon.png');
 }
-.tncode_msg{
+.tncode_msg_ok{
+    background-color: #24C628;
+}
+.tncode_msg_error{
+    background-color: #DE5145;
+}
+.tncode_msg_ok,.tncode_msg_error{
     position: absolute;
     top:136px;
     left: 10px;
     width: 220px;
     height: 20px;
-    background-color: #DE5145;
     color: #fff;
     margin: 0;
     padding: 2px 10px;
@@ -72,7 +188,7 @@ body{width:100%,overflow-x:hidden;}
     background-position: 0px 0px;
     font-size: 14px;
     opacity:0;
-    filter: alpha(opacity=0); background-color:#DE5145;
+    filter: alpha(opacity=0);
     z-index: 10000;
 }
 .slide{
