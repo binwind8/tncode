@@ -6,14 +6,16 @@ if(!document.getElementByClassName){
     function hasClass(elem, cls) {
       cls = cls || '';
       if (cls.replace(/\s/g, '').length == 0) return false; //当cls没有参数时，返回false
-      return new RegExp(' ' + cls + ' ').test(' ' + elem.className + ' ');
+      var ret = new RegExp(' ' + cls + ' ').test(' ' + elem.className + ' ');
+      return ret;
     }
-    document.getElementByClassName = function(className,index=0){
+    document.getElementByClassName = function(className,index){
         var nodes=document.getElementsByTagName("*");//获取页面里所有元素，因为他会匹配全页面元素，所以性能上有缺陷，但是可以约束他的搜索范围；
         var arr=[];//用来保存符合的className；
         for(var i=0;i<nodes.length;i++){
             if(hasClass(nodes[i],className)) arr.push(nodes[i]);
         }
+        if(!index)index=0;
         return index==-1?arr:arr[index];
     }
     function addClass( elements,cName ){
@@ -292,8 +294,9 @@ var tncode = {
         document.getElementById('tncode_div_bg').style.display="none";
         document.getElementById('tncode_div').style.display="none";
     },
-    _showmsg:function(msg,status=0){
-        if(status==0){
+    _showmsg:function(msg,status){
+        if(!status){
+            status = 0;
             var obj = document.getElementByClassName('tncode_msg_error');
         }else{
             var obj = document.getElementByClassName('tncode_msg_ok');
@@ -435,7 +438,11 @@ var tncode = {
     }
 };
 var $TN = tncode;
+var _old_onload = window.onload;
 window.onload = function(){
+    if(typeof _old_onload == 'function'){
+        _old_onload();
+    }
     tncode.init();
 };
 
