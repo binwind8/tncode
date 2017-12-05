@@ -17,7 +17,7 @@ if(!document.getElementByClassName){
         }
         if(!index)index=0;
         return index==-1?arr:arr[index];
-    }
+    };
     function addClass( elements,cName ){
        if( !hasClass( elements,cName ) ){
           elements.className += " " + cName;
@@ -30,22 +30,18 @@ if(!document.getElementByClassName){
     }
 }
 
-if(!Object.appendHTML){
-    Object.prototype.appendHTML = function(html) {
-        var divTemp = document.createElement("div"), nodes = null
-            // 文档片段，一次性append，提高性能
-            , fragment = document.createDocumentFragment();
-        divTemp.innerHTML = html;
-        nodes = divTemp.childNodes;
-        for (var i=0, length=nodes.length; i<length; i+=1) {
-           fragment.appendChild(nodes[i].cloneNode(true));
-        }
-        this.appendChild(fragment);
-        // 据说下面这样子世界会更清净
-        nodes = null;
-        fragment = null;
-    };
-}
+function appendHTML(o,html) {
+    var divTemp = document.createElement("div"), nodes = null
+        , fragment = document.createDocumentFragment();
+    divTemp.innerHTML = html;
+    nodes = divTemp.childNodes;
+    for (var i=0, length=nodes.length; i<length; i+=1) {
+       fragment.appendChild(nodes[i].cloneNode(true));
+    }
+    o.appendChild(fragment);
+    nodes = null;
+    fragment = null;
+};
 
 
 
@@ -97,7 +93,9 @@ var tncode = {
     _obj:null,
     _tncode:null,
     _img:null,
+    _img_loaded:false,
     _is_draw_bg:false,
+    _is_moving:false,
     _block_start_x:0,
     _block_start_y:0,
     _doing:false,
@@ -107,6 +105,7 @@ var tncode = {
     _img_w:240,
     _img_h:150,
     _result:false,
+    _err_c:0,
     _onsuccess:null,
     _bind:function(elm,evType,fn){
         //event.preventDefault();
@@ -119,6 +118,9 @@ var tncode = {
         }
     },
     _block_start_move:function(e){
+        if(tncode._doing||!tncode._img_loaded){
+            return;
+        }
         e.preventDefault();
         var theEvent = window.event || e;
         if(theEvent.touches){
@@ -133,16 +135,17 @@ var tncode = {
         tncode._block_start_x = theEvent.clientX;
         tncode._block_start_y = theEvent.clientY;
         tncode._doing = true;
+        tncode._is_moving = true;
     },
-
     _block_on_move:function(e){
+        if(!tncode._doing)return true;
+        if(!tncode._is_moving)return true;
         e.preventDefault();
         var theEvent = window.event || e;
         if(theEvent.touches){
             theEvent = theEvent.touches[0];
         }
-
-        if(!tncode._doing)return true;
+        tncode._is_moving = true;
         console.log("_block_on_move");
                 //document.getElementById('msg').innerHTML = "move:"+theEvent.clientX+";"+theEvent.clientY;
         var offset = theEvent.clientX - tncode._block_start_x;
@@ -154,40 +157,34 @@ var tncode = {
             offset = max_off;
         }
         var obj = document.getElementByClassName('slide_block');
+
         obj.style.cssText = "transform: translate("+offset+"px, 0px)";
         tncode._mark_offset = offset/max_off*(tncode._img_w-tncode._mark_w);
         tncode._draw_bg();
         tncode._draw_mark();
     },
-
     _block_on_end:function(e){
+        if(!tncode._doing)return true;
         e.preventDefault();
         var theEvent = window.event || e;
         if(theEvent.touches){
             theEvent = theEvent.touches[0];
         }
-
-        if(!tncode._doing)return true;
-        tncode._doing = false;
         console.log("_block_on_end");
-
+        tncode._is_moving = false;
         tncode._send_result();
-        //document.onmousemove = null;
-        //document.onmouseup = null;
     },
     _send_result:function(){
         var haddle = {success:tncode._send_result_success,failure:tncode._send_result_failure};
         tncode._result = false;
         var re = new _ajax();
-        re.request('get','check.php?tn_r='+tncode._mark_offset,haddle);
+        re.request('get',tncode._currentUrl()+'check.php?tn_r='+tncode._mark_offset,haddle);
     },
     _send_result_success:function(responseText,responseXML){
-        //alert(responseText);
+        tncode._doing = false;
         if(responseText=='ok'){
-            //tncode._showmsg('√验证成功');
             tncode._tncode.innerHTML = '√验证成功';
             tncode._showmsg('√验证成功',1);
-            //tncode.hide();
             tncode._result = true;
             document.getElementByClassName('hgroup').style.display="block";
             setTimeout(tncode.hide,3000);
@@ -202,6 +199,10 @@ var tncode = {
             },200);
             tncode._result = false;
             tncode._showmsg('验证失败');
+            tncode._err_c++;
+            if(tncode._err_c>5){
+                tncode.refresh();
+            }
         }
     },
     _send_result_failure:function(xhr,status){
@@ -227,7 +228,6 @@ var tncode = {
         //清理画布
         ctx_mark.clearRect(0,0,canvas_mark.width,canvas_mark.height);
         ctx_mark.drawImage(tncode._img, 0, tncode._img_h, tncode._mark_w,tncode._img_h,tncode._mark_offset,0,tncode._mark_w, tncode._img_h);
-
         var imageData = ctx_mark.getImageData(0, 0, tncode._img_w, tncode._img_h);
           // 获取画布的像素信息
           // 是一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示
@@ -270,7 +270,6 @@ var tncode = {
                 };
             }
         }
-        //imageData.data = data;
         ctx_mark.putImageData(imageData, 0, 0);
     },
     _reset:function(){
@@ -357,9 +356,9 @@ var tncode = {
     _html:function(){
         var d = document.getElementById('tncode_div_bg');
         if(d)return;
-        var html = '<div class="tncode_div_bg" id="tncode_div_bg"></div><div class="tncode_div" id="tncode_div"><canvas class="tncode_canvas_bg"></canvas><canvas class="tncode_canvas_mark"></canvas><div class="hgroup"></div><div class="tncode_msg_error"></div><div class="tncode_msg_ok"></div><div class="slide"><div class="slide_block"></div><div class="slide_block_text">拖动左边滑块完成上方拼图</div></div><div class="tools"><div class="tncode_close"></div><div class="tncode_refresh"></div><div class="tncode_tips"><a href="http://www.39gs.com/" target="_blank">39gs.com</a></div></div></div>';
+        var html = '<div class="tncode_div_bg" id="tncode_div_bg"></div><div class="tncode_div" id="tncode_div"><div class="loading">加载中</div><canvas class="tncode_canvas_bg"></canvas><canvas class="tncode_canvas_mark"></canvas><div class="hgroup"></div><div class="tncode_msg_error"></div><div class="tncode_msg_ok"></div><div class="slide"><div class="slide_block"></div><div class="slide_block_text">拖动左边滑块完成上方拼图</div></div><div class="tools"><div class="tncode_close"></div><div class="tncode_refresh"></div><div class="tncode_tips"><a href="http:\/\/www.39gs.com/archive/259.html" target=_blank>39gs.com</a></div></div></div>';
         var bo = document.getElementsByTagName('body');
-        bo[0].appendHTML(html);
+        appendHTML(bo[0],html);
     },
     _currentUrl:function(){
         var list = document.getElementsByTagName('script');
@@ -374,8 +373,14 @@ var tncode = {
     refresh:function(){
         var isSupportWebp = !![].map && document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0;
         var _this = this;
+        tncode._err_c = 0;
         tncode._is_draw_bg = false;
         tncode._result = false;
+        tncode._img_loaded = false;
+        var obj = document.getElementByClassName('tncode_canvas_bg');
+        obj.style.display="none";
+        obj = document.getElementByClassName('tncode_canvas_mark');
+        obj.style.display="none";
         tncode._img = new Image();
         var img_url = tncode._currentUrl()+"tncode.php?t="+Math.random();
         if(!isSupportWebp){//浏览器不支持webp
@@ -388,9 +393,14 @@ var tncode = {
             var ctx_mark = canvas_mark.getContext('2d');
             //清理画布
             ctx_mark.clearRect(0,0,canvas_mark.width,canvas_mark.height);
-        }
+            tncode._img_loaded = true;
+            obj = document.getElementByClassName('tncode_canvas_bg');
+            obj.style.display="";
+            obj = document.getElementByClassName('tncode_canvas_mark');
+            obj.style.display="";
+        };
         //alert("Hong Kong ForHarvest Technology and Culture Development Co. Limited".length);
-        var obj = document.getElementByClassName('slide_block');
+        obj = document.getElementByClassName('slide_block');
         obj.style.cssText = "transform: translate(0px, 0px)";
         obj = document.getElementByClassName('slide_block_text');
         obj.style.display="block";
@@ -400,9 +410,6 @@ var tncode = {
         if(!tncode._img){
             tncode._html();
             var obj = document.getElementByClassName('slide_block');
-            //obj.onmousedown = _this._block_start_move;
-            //document.onmousemove = _this._block_on_move;
-            //document.onmouseup = _this._block_on_end;
 
             tncode._bind(obj,'mousedown',_this._block_start_move);
             tncode._bind(document,'mousemove',_this._block_on_move);

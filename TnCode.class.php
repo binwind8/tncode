@@ -1,7 +1,5 @@
 <?php
 /*! tncode 1.2 author:weiyingbin email:277612909@qq.com
-//@ object webiste: http://www.39gs.com/archive/259.html
-//@ https://github.com/binwind8/tncode
 */
 class TnCode
 {
@@ -19,6 +17,9 @@ class TnCode
     //容错象素 越大体验越好，越小破解难道越高
     var $_fault = 3;
     function __construct(){
+        //ini_set('display_errors','On');
+        //
+        error_reporting(0);
         if(!isset($_SESSION)){
             session_start();
         }
@@ -33,15 +34,22 @@ class TnCode
     }
 
     function check($offset=''){
+        if(!$_SESSION['tncode_r']){
+            return false;
+        }
         if(!$offset){
             $offset = $_REQUEST['tn_r'];
         }
-        $_REQUEST['tn_c']++;
-        if($_REQUEST['tn_c']>1){
-            $_REQUEST['tn_r'] = null;
+        $ret = abs($_SESSION['tncode_r']-$offset)<=$this->_fault;
+        if($ret){
+            unset($_SESSION['tncode_r']);
+        }else{
+            $_SESSION['tncode_err']++;
+            if($_SESSION['tncode_err']>10){//错误10次必须刷新
+                unset($_SESSION['tncode_r']);
+            }
         }
-        //echo $_SESSION['tncode_r']."|".$offset;
-        return abs($_SESSION['tncode_r']-$offset)<=$this->_fault;
+        return $ret;
     }
 
     private function _init(){
@@ -52,7 +60,7 @@ class TnCode
         imagecopy($this->im_bg,$this->im_fullbg,0,0,0,0,$this->bg_width, $this->bg_height);
         $this->im_slide = imagecreatetruecolor($this->mark_width, $this->bg_height);
         $_SESSION['tncode_r'] = $this->_x = mt_rand(50,$this->bg_width-$this->mark_width-1);
-        $_REQUEST['tn_c'] = 0;
+        $_SESSION['tncode_err'] = 0;
         $this->_y = mt_rand(0,$this->bg_height-$this->mark_height-1);
     }
 
@@ -62,7 +70,6 @@ class TnCode
         imagedestroy($this->im_bg);
         imagedestroy($this->im_slide);
     }
-
     private function _imgout(){
         if(!$_GET['nowebp']&&function_exists('imagewebp')){//优先webp格式，超高压缩率
             $type = 'webp';
@@ -75,7 +82,6 @@ class TnCode
         $func = "image".$type;
         $func($this->im,null,$quality);
     }
-
     private function _merge(){
         $this->im = imagecreatetruecolor($this->bg_width, $this->bg_height*3);
         imagecopy($this->im, $this->im_bg,0, 0 , 0, 0, $this->bg_width, $this->bg_height);

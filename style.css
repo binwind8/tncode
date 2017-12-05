@@ -51,6 +51,17 @@ body{width:100%,overflow-x:hidden;}
     left: 10px;
     top: 10px;
 }
+.tncode_div .loading{
+    padding-top: 60px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background-color: #ccc;
+    width: 240px;
+    height: 150px;
+    text-align: center;
+    box-sizing:border-box;
+}
 .dd{
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
